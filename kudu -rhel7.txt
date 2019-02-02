@@ -157,9 +157,9 @@ kudu -version
 kudu-master --flagfile=<path>
 kudu-tserver --flagfile=<path>
 
-scp cluster@10.0.0.8:/backup/cluster1/kudu/apache-kudu-1.8.0/build/release/bin/kudu /usr/local/kudu_1.8
-scp cluster@10.0.0.8:/backup/cluster1/kudu/apache-kudu-1.8.0/build/release/bin/kudu-master /usr/local/kudu_1.8
-scp cluster@10.0.0.8:/backup/cluster1/kudu/apache-kudu-1.8.0/build/release/bin/kudu-tserver /usr/local/kudu_1.8
+scp cluster@x.x.x.x:/backup/cluster1/kudu/apache-kudu-1.8.0/build/release/bin/kudu /usr/local/kudu_1.8
+scp cluster@x.x.x.x:/backup/cluster1/kudu/apache-kudu-1.8.0/build/release/bin/kudu-master /usr/local/kudu_1.8
+scp cluster@x.x.x.x:/backup/cluster1/kudu/apache-kudu-1.8.0/build/release/bin/kudu-tserver /usr/local/kudu_1.8
 
 mkdir -p /opt/kudu/master/wal /opt/kudu/master/data /opt/kudu/tserver/wal /opt/kudu/tserver/data 
 /opt/kudu/log
