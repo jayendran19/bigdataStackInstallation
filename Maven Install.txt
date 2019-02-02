@@ -1,0 +1,28 @@
+Mzven Installation RHEL7
+REF:
+https://www.javahelps.com/2017/10/install-apache-maven-on-linux.html
+https://access.redhat.com/documentation/en-us/red_hat_jboss_fuse/6.2.1/html/installation_on_jboss_eap/install_maven
+https://www.tecmint.com/install-apache-maven-on-centos-7/
+
+code
+cd ~/Downloads && sudo wget http://mirror.olnevhost.net/pub/apache/maven/maven-3/3.6.0/binaries/apache-maven-3.6.0-bin.tar.gz
+sudo tar -xzvf ~/Downloads/apache-maven-3.6.0-bin.tar.gz -C /opt/
+sudo vi ~/.bashrc
+export M2_HOME="/opt/apache-maven-3.6.0"
+export PATH=$PATH:$M2_HOME/bin
+source ~/.bashrc
+
+usage
+mvn –version
+mvn compile (compiles source files)
+mvn test-compile (compiles test files) - one thing to observe is this also compiles source files
+mvn clean - deletes target directory
+mvn test - run unit tests
+mvn package - creates the jar
+help:effective-settings
+help:effective-pom
+dependency:tree
+dependency:sources
+–debug
+
+http://repo.maven.apache.org/maven2/org/apache/maven/plugins/

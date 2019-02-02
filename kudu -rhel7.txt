@@ -1,0 +1,187 @@
+kudu Installation on RHEL7
+version kudu 1.4.0
+ref:
+https://www.jianshu.com/p/a69a94a0cbc1?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation
+https://kudu.apache.org/docs/installation.html
+
+CODE Master
+cd /etc/yum.repos.d && sudo wget http://archive.cloudera.com/kudu/redhat/7/x86_64/kudu/cloudera-kudu.repo
+cd && sudo yum install kudu
+sudo yum install kudu-master
+sudo yum install kudu-client0
+sudo yum install kudu-client-devel
+sudo vi /etc/kudu/conf.dist/master.gflagfile 
+#--fromenv=rpc_bind_addresses
+#--fromenv=log_dir
+
+--log_dir=<path>
+--rpc_bind_addresses=localhost:7051
+--fs_wal_dir=/opt/kudu/master/wal
+--fs_data_dirs=/opt/kudu/master/data
+
+--rpc-encryption=disabled
+--rpc_authentication=disabled
+
+--unlock_unsafe_flags=true
+--allow_unsafe_replication_factor=true
+--default_num_replicas=1
+--trusted_subnets=0.0.0.0/0
+--trusted_subnets=127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16
+--rpc_negotiation_timeout_ms=9000
+
+sudo vi /etc/default/kudu-master
+export FLAGS_log_dir=/opt/kudu/log
+export FLAGS_rpc_bind_addresses=localhost:7051
+
+
+sudo service kudu-master start
+sudo service kudu-master stop
+/var/log/kudu/kudu-master.FATAL
+
+sudo yum install ntp
+ntptime
+
+CODE:TableServer
+sudo yum install wget
+cd /etc/yum.repos.d && sudo wget http://archive.cloudera.com/kudu/redhat/7/x86_64/kudu/cloudera-kudu.repo
+cd && sudo yum install kudu
+sudo yum install kudu-tserver
+sudo yum install kudu-client0
+sudo yum install kudu-client-devel
+sudo vi /etc/kudu/conf.dist/tserver.gflagfile 
+#--fromenv=rpc_bind_addresses
+#--fromenv=log_dir
+
+
+--rpc_bind_addresses=localhost:7050
+--log_dir=/opt/kudu/log
+
+--fs_wal_dir=/opt/kudu/tserver/wal
+--fs_data_dirs=/opt/kudu/tserver/data
+--tserver_master_addrs=localhost:7051
+
+--rpc-encryption=disabled
+--rpc_authentication=disabled
+
+sudo vi /etc/default/kudu-tserver
+export FLAGS_log_dir=/var/log/kudu
+export FLAGS_rpc_bind_addresses=localhost:7050
+
+sudo service kudu-tserver start
+sudo service kudu-tserver stop
+sudo service kudu-tserver restart
+
+
+ntp install
+ref:
+https://www.certdepot.net/rhel7-set-ntp-service/
+
+cd && yum install ntp
+nano /etc/default/ntp
+ntpstat
+systemctl enable ntpd
+systemctl start ntpd
+systemctl restart ntpd
+ntptime
+
+date -s '2019/01/4 11:07:47' Jan  4 2019 11:07:47
+
+
+
+version kudu 1.8.0
+ref:
+https://kudu.apache.org/releases/1.8.0/
+https://github.com/apache/kudu
+https://kudu.apache.org/docs/installation.html
+
+code
+sudo yum install autoconf automake cyrus-sasl-devel cyrus-sasl-gssapi \
+  cyrus-sasl-plain flex gcc gcc-c++ gdb git \
+  krb5-server krb5-workstation libtool make openssl-devel patch \
+  pkgconfig redhat-lsb-core rsync unzip vim-common which
+  
+sudo yum install doxygen gem graphviz ruby-devel zlib-devel
+cd ~/Downloads && wget http://mirrors.estointernet.in/apache/kudu/1.8.0/apache-kudu-1.8.0.tar.gz
+mkdir  -p /backup/cluster1/kudu
+tar -xzvf ~/Downloads/apache-kudu-1.8.0.tar.gz -C /backup/cluster1/kudu/
+cd /backup/cluster1/kudu/apache-kudu-1.8.0
+chmod 777 /usr/local/cluster/kudu/apache-kudu-1.7.1/thirdparty
+chmod 777 /usr/local/cluster/kudu/apache-kudu-1.7.1/www
+build-support/enable_devtoolset.sh thirdparty/build-if-necessary.sh
+mkdir -p build/release
+cd build/release
+../../build-support/enable_devtoolset.sh \
+  ../../thirdparty/installed/common/bin/cmake \
+  -DCMAKE_BUILD_TYPE=release \
+  ../..
+make -j4
+sudo vi ~/.bashrc
+#KUDU_HOME
+export KUDU_HOME=/backup/cluster1/kudu/apache-kudu-1.8.0/build/release
+export PATH=$PATH:$KUDU_HOME/bin
+#export FLAGS_log_dir=/opt/kudu/log
+#export FLAGS_rpc_bind_addresses=localhost:7051
+#export FLAGS_log_dir=/var/log/kudu
+#export FLAGS_rpc_bind_addresses=localhost:7050
+
+source ~/.bashrc
+
+MasterFlagFile
+--log_dir=<path>
+--rpc_bind_addresses=localhost:7051
+--fs_wal_dir=/opt/kudu/master/wal
+--fs_data_dirs=/opt/kudu/master/data
+
+--rpc-encryption=disabled
+--rpc_authentication=disabled
+
+--unlock_unsafe_flags=true
+--allow_unsafe_replication_factor=true
+--default_num_replicas=1
+--trusted_subnets=0.0.0.0/0
+--trusted_subnets=127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16
+--rpc_negotiation_timeout_ms=9000
+
+TServerFlagFile
+--rpc_bind_addresses=localhost:7050
+--log_dir=/opt/kudu/log
+
+--fs_wal_dir=/opt/kudu/tserver/wal
+--fs_data_dirs=/opt/kudu/tserver/data
+--tserver_master_addrs=localhost:7051
+
+--rpc-encryption=disabled
+--rpc_authentication=disabled
+--block_cache_capacity_mb=300
+kudu -version
+kudu-master --flagfile=<path>
+kudu-tserver --flagfile=<path>
+
+scp cluster@10.0.0.8:/backup/cluster1/kudu/apache-kudu-1.8.0/build/release/bin/kudu /usr/local/kudu_1.8
+scp cluster@10.0.0.8:/backup/cluster1/kudu/apache-kudu-1.8.0/build/release/bin/kudu-master /usr/local/kudu_1.8
+scp cluster@10.0.0.8:/backup/cluster1/kudu/apache-kudu-1.8.0/build/release/bin/kudu-tserver /usr/local/kudu_1.8
+
+mkdir -p /opt/kudu/master/wal /opt/kudu/master/data /opt/kudu/tserver/wal /opt/kudu/tserver/data 
+/opt/kudu/log
+
+
+USAGE
+kudu perf loadgen
+kudu table list
+kudu cluster ksck master1
+kudu master status master1
+kudu master get_flags master1
+ps aux | grep kudu
+zcat sfmtaAVLRawData01012013.csv.gz | tr -d '\r' | hadoop fs -put - /sfmta/data.csv
+
+curl -s 'http://localhost:8050/metrics?include_schema=1&metrics=connections_accepted'
+curl -s 'http://localhost:8051/metrics?include_schema=1&metrics=connections_accepted'
+curl -s 'http://localhost:8050/metrics?metrics=log_append_latency'
+
+ERRORS
+Service unavailable: Cannot initialize clock: Error reading clock. Clock considered unsynchronized
+
+[cluster@node1 ~]$ kudu-master --flagfile=/opt/kudu/flags/masterflag/flag1
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E0124 08:40:35.013044 11676 server_base.cc:286] RPC authentication (--rpc_authentication) may not be required unless Kerberos (--keytab_file) or external PKI (--rpc_certificate_file et al) are configured
+E0124 08:40:35.013285 11676 flags.cc:442] Detected inconsistency in command-line flags; exiting

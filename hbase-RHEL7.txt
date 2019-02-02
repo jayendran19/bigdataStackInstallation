@@ -1,0 +1,42 @@
+Hbase installation on RHEL
+
+version hbase 1.4.7
+Ref:https://www.tutorialspoint.com/hbase/hbase_installation.htm
+https://www.guru99.com/hbase-installation-guide.html
+
+code
+sudo mkdir /usr/local/cluster
+sudo mkdir /usr/local/cluster/hbase
+cd ~/Downloads && sudo wget http://mirrors.estointernet.in/apache/hbase/stable/hbase-1.4.9-bin.tar.gz
+sudo tar -xzvf ~/Downloads/hbase-1.4.9-bin.tar.gz -C /usr/local/cluster/hbase/
+sudo vi /usr/local/cluster/hbase/hbase-1.4.9/conf/hbase-env.sh
+export JAVA_HOME=/opt/jdk1.8.0_192
+sudo vi /usr/local/cluster/hbase/hbase-1.4.9/conf/hbase-site.xml
+<configuration>
+   //Here you have to set the path where you want HBase to store its files.
+   <property>
+      <name>hbase.rootdir</name>
+      <value>file:/home/cluser/HBase/HFiles</value>
+   </property>
+	
+   //Here you have to set the path where you want HBase to store its built in zookeeper  files.
+   <property>
+      <name>hbase.zookeeper.property.dataDir</name>
+      <value>/home/cluser/zookeeper</value>
+   </property>
+</configuration>
+cd && sudo vi ~/.bashrc
+export HBASE_HOME=/usr/local/cluster/hbase/hbase-1.4.9
+export PATH=$PATH:$HBASE_HOME/bin
+source ~/.bashrc
+hbase version
+cd /usr/local/cluster/hbase/hbase-1.4.9/bin
+sudo chmod 777 /usr/local/cluster/hbase/hbase-1.4.9
+start-hbase.sh
+http://localhost:60010
+
+
+
+version hbase 1.4.7
+Ref:https://www.tutorialspoint.com/hbase/hbase_installation.htm
+https://www.guru99.com/hbase-installation-guide.html

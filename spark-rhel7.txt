@@ -1,0 +1,33 @@
+Spark Installation on RHEL7
+ref:
+http://www.informit.com/articles/article.aspx?p=2755929&seqNum=3
+http://datadotz.com/high-availability-of-apache-spark-using-apache-zookeeper-quorum/
+https://jaceklaskowski.gitbooks.io/mastering-apache-spark/exercises/spark-exercise-standalone-master-ha.html
+http://chennaihug.org/knowledgebase/high-availability-of-apache-spark-using-apache-zookeeper-quorum/
+
+
+Code
+sudo yum update
+sudo mkdir /usr/local/cluster/spark
+cd ~/Downloads && sudo wget http://mirrors.estointernet.in/apache/spark/spark-2.2.2/spark-2.2.2-bin-hadoop2.7.tgz
+sudo tar -xzvf ~/Downloads/spark-2.2.2-bin-hadoop2.7.tgz -C /usr/local/cluster/spark/
+cd && sudo vi ~/.bashrc
+export SPARK_HOME=/usr/local/cluster/spark/spark-2.2.2-bin-hadoop2.7
+export PATH=$PATH:$SPARK_HOME/bin
+source ~/.bashrc
+
+sudo wget http://central.maven.org/maven2/org/apache/spark/spark-streaming-kafka-0-10_2.11/2.2.0/spark-streaming-kafka-0-10_2.11-2.2.0.jar
+sudo wget http://central.maven.org/maven2/org/apache/kafka/kafka-clients/0.10.2.1/kafka-clients-0.10.2.1.jar
+sudo mv ~/Downloads/spark-streaming-kafka-0-10_2.11-2.2.0.jar /usr/local/cluster/spark/spark-2.2.2-bin-hadoop2.7/jars/
+sudo mv ~/Downloads/kafka-clients-0.10.2.1.jar /usr/local/cluster/spark/spark-2.2.2-bin-hadoop2.7/jars/
+sudo mv /usr/local/cluster/spark/spark-2.2.2-bin-hadoop2.7/jars/spark-streaming-kafka-0-10_2.11-2.2.0.jar ~/Downloads/
+sudo mv /usr/local/cluster/spark/spark-2.2.2-bin-hadoop2.7/jars/kafka-clients-0.10.2.1.jar ~/Downloads/ 
+cd /usr/local/cluster/spark/spark-2.2.2-bin-hadoop2.7/jars
+sudo wget http://central.maven.org/maven2/org/apache/kudu/kudu-client/1.8.0/kudu-client-1.8.0.jar
+sudo wget http://central.maven.org/maven2/org/apache/kudu/kudu-spark2_2.11/1.8.0/kudu-spark2_2.11-1.8.0.jar
+sudo wget http://central.maven.org/maven2/org/apache/kafka/kafka_2.11/2.1.0/kafka_2.11-2.1.0.jar
+sudo wget http://central.maven.org/maven2/org/apache/kafka/kafka-clients/2.1.0/kafka-clients-2.1.0.jar
+
+spark-shell
+spark-submit --class org.apache.spark.examples.SparkPi --master spark://sparkmaster:7077 --driver-memory 512m --executor-memory 512m --executor-cores 1 $SPARK_HOME/lib/spark-examples*.jar 10
+spark-submit --class KafkaConsumer ~/sparkapp/target/sparkapp-0.0.1-SNAPSHOT.jar --packages org.apache.spark:spark-streaming-kafka-0-10_2.11:2.2.0

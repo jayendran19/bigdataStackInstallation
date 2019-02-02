@@ -1,0 +1,26 @@
+Java Instalation On RHEL7
+ref:https://tecadmin.net/install-java-8-on-centos-rhel-and-fedora/
+Basic
+sudo passwd root
+sudo yum install wget
+sudo yum update
+
+code
+sudo mkdir ~/Downloads && cd ~/Downloads
+sudo wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "https://download.oracle.com/otn-pub/java/jdk/8u192-b12/750e1c8617c5452694857ad95c3ee230/jdk-8u192-linux-x64.tar.gz"
+sudo tar -xzf jdk-8u192-linux-x64.tar.gz -C /opt/
+cd /opt/jdk1.8.0_192/
+sudo alternatives --install /usr/bin/java java /opt/jdk1.8.0_192/bin/java 2
+sudo alternatives --config java
+sudo alternatives --install /usr/bin/jar jar /opt/jdk1.8.0_192/bin/jar 2
+sudo alternatives --install /usr/bin/javac javac /opt/jdk1.8.0_192/bin/javac 2
+sudo alternatives --set jar /opt/jdk1.8.0_192/bin/jar
+sudo alternatives --set javac /opt/jdk1.8.0_192/bin/javac
+java -version
+cd && sudo vi ~/.bashrc
+#JAVA_HOME
+export JAVA_HOME=/opt/jdk1.8.0_192
+export JRE_HOME=/opt/jdk1.8.0_192/jre
+export PATH=$PATH:/opt/jdk1.8.0_192/bin:/opt/jdk1.8.0_192/jre/bin
+source ~/.bashrc
+cd && java -version

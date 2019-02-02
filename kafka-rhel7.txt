@@ -1,0 +1,54 @@
+kafka Installation on RHEL7
+Version kafka_2.12-2.1.0
+Ref:https://www.tutorialspoint.com/apache_kafka/apache_kafka_installation_steps.htm
+https://www.vultr.com/docs/how-to-install-apache-kafka-on-centos-7
+https://zookeeper.apache.org/doc/r3.1.2/zookeeperStarted.html
+
+
+code:Zookeeper
+
+sudo mkdir /usr/local/cluster
+chmod 777 /usr/local/cluster
+sudo mkdir /usr/local/cluster/zookeeper
+cd ~/Downloads && sudo wget http://mirrors.estointernet.in/apache/zookeeper/stable/zookeeper-3.4.12.tar.gz
+sudo tar -xzvf ~/Downloads/zookeeper-3.4.12.tar.gz -C /usr/local/cluster/zookeeper/
+sudo mkdir /usr/local/cluster/zookeeper/zookeeper-3.4.12/data
+sudo mv /usr/local/cluster/zookeeper/zookeeper-3.4.12/conf/zoo_sample.cfg /usr/local/cluster/zookeeper/zookeeper-3.4.12/conf/zoo.cfg
+sudo vi /usr/local/cluster/zookeeper/zookeeper-3.4.12/conf/zoo.cfg
+tickTime=2000
+dataDir=/usr/local/cluster/zookeeper/zookeeper-3.4.12/data
+clientPort=2181
+initLimit=5
+syncLimit=2
+sudo vi ~/.bashrc
+#ZOOKEEPER_HOME
+export ZOOKEEPER_HOME=/usr/local/cluster/zookeeper/zookeeper-3.4.12
+export PATH=$PATH:$ZOOKEEPER_HOME/bin
+source ~/.bashrc
+ 
+zkServer.sh start
+zkCli.sh
+zkServer.sh stop
+
+Code:Zookeeper Client
+zkCli.sh
+create /hbase "" 
+
+AddOnConfig:
+export SPARK_DAEMON_JAVA_OPTS="-Dspark.deploy.recoveryMode=ZOOKEEPER -Dspark.deploy.zookeeper.url=ZK1:2181,ZK2:2181,ZK3:2181 -Dspark.deploy.zookeeper.dir=/sparkha"
+sudo setenforce 0 //set SELINUX=disabled in /etc/selinux/config file.
+
+
+
+
+code:Kafka
+sudo mkdir /usr/local/cluster/kafka
+cd ~/Downloads && sudo wget http://mirrors.estointernet.in/apache/kafka/2.1.0/kafka_2.12-2.1.0.tgz
+tar -xzvf ~/Downloads/kafka_2.12-2.1.0.tgz -C /usr/local/cluster/kafka/
+cd /usr/local/cluster/kafka/kafka_2.12-2.1.0
+bin/kafka-server-start.sh config/server.properties
+
+bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test1
+bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test1
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test1 --from-beginning
+bin/kafka-server-stop.sh config/server.properties
